@@ -32,7 +32,7 @@ export default function HeroSlideshow() {
             className={`object-cover transition-opacity duration-[2000ms] animate-slow-zoom ${
               i === current ? 'opacity-100' : 'opacity-0'
             }`}
-            priority={i === 0}
+            loading={i === current ? 'eager' : 'lazy'}
             sizes="100vw"
           />
         ))}

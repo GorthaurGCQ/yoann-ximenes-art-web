@@ -31,7 +31,7 @@ export default function HomePage() {
           </div>
           <div className="aspect-[4/3] bg-stone-900 relative overflow-hidden group border border-stone-800">
             <Image
-              src="https://images.unsplash.com/photo-1507643179173-61786aa903a7?auto=format&fit=crop&q=80"
+              src="/Images/Oeuvres/Speechscape/speechscape_1.jpg"
               alt={t.index.expoAlt}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"

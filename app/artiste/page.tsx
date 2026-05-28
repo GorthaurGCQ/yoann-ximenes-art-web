@@ -1,10 +1,46 @@
 'use client';
 
-import Image from 'next/image';
+import { useMemo } from 'react';
+import EditableImage from '@/components/cms/EditableImage';
+import EditableRichText from '@/components/cms/EditableRichText';
+import EditableText from '@/components/cms/EditableText';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCmsContent } from '@/hooks/useCmsContent';
+import { translations } from '@/lib/translations';
 
 export default function ArtistePage() {
-  const { t } = useLanguage();
+  const { lang } = useLanguage();
+  const fallbackValues = useMemo(
+    () => ({
+      'artiste.profileImage.src': '/Images/yoann-ximenes-portrait.jpeg',
+      'artiste.profileImage.alt': "Portrait de l'artiste",
+      'translations.fr.artiste.title': translations.fr.artiste.title,
+      'translations.fr.artiste.heading': translations.fr.artiste.heading,
+      'translations.fr.artiste.text1': translations.fr.artiste.text1,
+      'translations.fr.artiste.text2': translations.fr.artiste.text2,
+      'translations.fr.artiste.quote': translations.fr.artiste.quote,
+      'translations.fr.artiste.text3': translations.fr.artiste.text3,
+      'translations.fr.artiste.text4': translations.fr.artiste.text4,
+      'translations.fr.artiste.distinctions': translations.fr.artiste.distinctions,
+      'translations.fr.artiste.distinction1': translations.fr.artiste.distinction1,
+      'translations.fr.artiste.distinction2': translations.fr.artiste.distinction2,
+      'translations.fr.artiste.distinction3': translations.fr.artiste.distinction3,
+      'translations.en.artiste.title': translations.en.artiste.title,
+      'translations.en.artiste.heading': translations.en.artiste.heading,
+      'translations.en.artiste.text1': translations.en.artiste.text1,
+      'translations.en.artiste.text2': translations.en.artiste.text2,
+      'translations.en.artiste.quote': translations.en.artiste.quote,
+      'translations.en.artiste.text3': translations.en.artiste.text3,
+      'translations.en.artiste.text4': translations.en.artiste.text4,
+      'translations.en.artiste.distinctions': translations.en.artiste.distinctions,
+      'translations.en.artiste.distinction1': translations.en.artiste.distinction1,
+      'translations.en.artiste.distinction2': translations.en.artiste.distinction2,
+      'translations.en.artiste.distinction3': translations.en.artiste.distinction3,
+    }),
+    []
+  );
+  const cmsValues = useCmsContent(fallbackValues);
+  const baseKey = `translations.${lang}.artiste`;
 
   return (
     <main className="pt-16 animate-fade-in-up">
@@ -12,10 +48,11 @@ export default function ArtistePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
           {/* Portrait */}
           <div className="relative aspect-[3/4] bg-stone-900 border border-stone-800 group overflow-hidden">
-            <Image
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
-              alt="Portrait de l'artiste"
-              fill
+            <EditableImage
+              srcKey="artiste.profileImage.src"
+              altKey="artiste.profileImage.alt"
+              src={cmsValues['artiste.profileImage.src']}
+              alt={cmsValues['artiste.profileImage.alt']}
               className="object-cover grayscale opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
@@ -23,34 +60,65 @@ export default function ArtistePage() {
 
           {/* Texte */}
           <div className="pt-8 md:pt-0">
-            <h1 className="font-serif text-4xl md:text-5xl mb-8 text-stone-100">
-              {t.artiste.title}
-            </h1>
+            <EditableText
+              as="h1"
+              contentKey={`${baseKey}.title`}
+              value={cmsValues[`${baseKey}.title`]}
+              className="font-serif text-4xl md:text-5xl mb-8 text-stone-100"
+            />
 
             <div className="space-y-6 text-stone-400 font-light leading-relaxed text-lg">
-              <h2 className="text-stone-200 font-medium text-xl">{t.artiste.heading}</h2>
-              <p>{t.artiste.text1}</p>
-              <p>{t.artiste.text2}</p>
-              <p className="text-stone-300 italic">{t.artiste.quote}</p>
-              <p>{t.artiste.text3}</p>
-              <p>{t.artiste.text4}</p>
+              <EditableText
+                as="h2"
+                contentKey={`${baseKey}.heading`}
+                value={cmsValues[`${baseKey}.heading`]}
+                className="text-stone-200 font-medium text-xl"
+              />
+              <EditableRichText
+                contentKey={`${baseKey}.text1`}
+                value={cmsValues[`${baseKey}.text1`]}
+              />
+              <EditableRichText
+                contentKey={`${baseKey}.text2`}
+                value={cmsValues[`${baseKey}.text2`]}
+              />
+              <EditableText
+                as="p"
+                contentKey={`${baseKey}.quote`}
+                value={cmsValues[`${baseKey}.quote`]}
+                className="text-stone-300 italic"
+              />
+              <EditableRichText
+                contentKey={`${baseKey}.text3`}
+                value={cmsValues[`${baseKey}.text3`]}
+              />
+              <EditableRichText
+                contentKey={`${baseKey}.text4`}
+                value={cmsValues[`${baseKey}.text4`]}
+              />
             </div>
 
             <div className="mt-12 border-t border-stone-800 pt-8">
-              <h3 className="font-serif text-xl mb-4 text-stone-200">
-                {t.artiste.distinctions}
-              </h3>
+              <EditableText
+                as="h3"
+                contentKey={`${baseKey}.distinctions`}
+                value={cmsValues[`${baseKey}.distinctions`]}
+                className="font-serif text-xl mb-4 text-stone-200"
+              />
               <ul className="space-y-2 text-stone-500 font-light text-sm">
-                {[t.artiste.distinction1, t.artiste.distinction2, t.artiste.distinction3].map(
-                  (d) => (
-                    <li
-                      key={d}
-                      className="hover:text-stone-300 transition-colors cursor-default"
-                    >
-                      {d}
-                    </li>
-                  )
-                )}
+                {[
+                  cmsValues[`${baseKey}.distinction1`],
+                  cmsValues[`${baseKey}.distinction2`],
+                  cmsValues[`${baseKey}.distinction3`],
+                ].map((d, index) => (
+                  <EditableText
+                    key={`${index}-${d}`}
+                    as="li"
+                    contentKey={`${baseKey}.distinction${index + 1}`}
+                    value={d}
+                    className="hover:text-stone-300 transition-colors cursor-default"
+                  />
+                ))}
               </ul>
             </div>
           </div>

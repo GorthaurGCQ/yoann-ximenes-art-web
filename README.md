@@ -34,3 +34,36 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## CMS Inline privé (V1)
+
+Le site inclut un mode admin inline:
+
+- URL de connexion cachée: `/studio-x9/login`
+- Aucune page dashboard publique
+- Les boutons d'édition n'apparaissent qu'en session admin
+- Les données CMS sont stockées dans `data/cms-store.json`
+
+### Configuration
+
+1. Copier `.env.example` vers `.env.local`
+2. Générer un hash bcrypt pour le mot de passe admin:
+
+```bash
+node -e "console.log(require('bcryptjs').hashSync('TonMotDePasseFort', 12))"
+```
+
+3. Remplir ces variables:
+
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD_HASH`
+- `ADMIN_SESSION_SECRET`
+
+### APIs
+
+- `POST /api/admin/login`
+- `POST /api/admin/logout`
+- `GET /api/admin/session`
+- `PATCH /api/admin/content` (protégée)
+- `GET /api/admin/content` (logs, protégée)
+- `GET /api/cms/content?keys=key1,key2` (lecture publique + fallback)

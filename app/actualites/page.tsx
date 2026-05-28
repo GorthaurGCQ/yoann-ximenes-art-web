@@ -6,10 +6,10 @@ import InstagramIcon from '@/components/icons/InstagramIcon';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const instagramImages = [
-  'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1515405295579-ba7f4592f905?auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80',
+  '/Images/Oeuvres/La_symphony/1.XimenesYoann,La symphonie des vagabonds.jpg',
+  '/Images/Oeuvres/Le Big Bang de Louise/Le Big Bang de Louise.jpg',
+  '/Images/Oeuvres/Mantras/1.Mantras.jpg',
+  '/Images/Oeuvres/Nùn/DSC_0532.jpg',
 ];
 
 export default function ActualitesPage() {
