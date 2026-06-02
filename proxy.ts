@@ -18,7 +18,7 @@ async function isAdminAuthenticated(token: string | undefined): Promise<boolean>
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAdminLoginPath = pathname === '/studio-x9/login';
   const isAdminLoginApiPath = pathname === '/api/admin/login';
