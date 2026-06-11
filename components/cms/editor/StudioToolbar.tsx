@@ -11,13 +11,13 @@ export default function StudioToolbar() {
 
   const onLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
-    router.push('/studio-x9/login');
+    router.push('/studio/login');
   };
 
   return (
     <header className="h-14 border-b border-stone-800 bg-stone-950 flex items-center justify-between px-4 gap-4 shrink-0">
       <div className="flex items-center gap-4">
-        <span className="font-serif text-lg text-stone-100 hidden sm:inline">Studio X9</span>
+        <span className="font-serif text-lg text-stone-100 hidden sm:inline">Studio</span>
         <PageSwitcher />
         <LanguageToggle />
       </div>

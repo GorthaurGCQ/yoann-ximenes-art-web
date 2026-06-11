@@ -39,7 +39,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Le site inclut un mode admin inline:
 
-- URL de connexion cachée: `/studio-x9/login`
+- URL de connexion cachée: `/studio/login`
 - Aucune page dashboard publique
 - Les boutons d'édition n'apparaissent qu'en session admin
 - Les données CMS sont stockées dans `data/cms-store.json`

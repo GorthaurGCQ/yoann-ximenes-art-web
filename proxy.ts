@@ -20,11 +20,11 @@ async function isAdminAuthenticated(token: string | undefined): Promise<boolean>
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const isAdminLoginPath = pathname === '/studio-x9/login';
+  const isAdminLoginPath = pathname === '/studio/login';
   const isAdminLoginApiPath = pathname === '/api/admin/login';
   const isProtectedAdminPath =
     (pathname.startsWith('/api/admin') && !isAdminLoginApiPath) ||
-    (pathname.startsWith('/studio-x9') && !isAdminLoginPath);
+    (pathname.startsWith('/studio') && !isAdminLoginPath);
 
   if (!isProtectedAdminPath) return NextResponse.next();
 
@@ -37,10 +37,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const loginUrl = new URL('/studio-x9/login', request.url);
+  const loginUrl = new URL('/studio/login', request.url);
   return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
-  matcher: ['/api/admin/:path*', '/studio-x9/:path*'],
+  matcher: ['/api/admin/:path*', '/studio/:path*'],
 };

@@ -17,7 +17,7 @@ export default function PageSwitcher() {
       if (!ok) return;
       revertAll();
     }
-    router.push(`/studio-x9/edit/${nextPage}`);
+    router.push(`/studio/edit/${nextPage}`);
   };
 
   return (

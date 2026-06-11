@@ -41,7 +41,7 @@ export default function SearchPalette() {
       revertAll();
     }
     if (lang) setLang(lang);
-    router.push(`/studio-x9/edit/${page}`);
+    router.push(`/studio/edit/${page}`);
     setTimeout(() => selectBlock(key), 300);
     setOpen(false);
     setQuery('');

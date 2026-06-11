@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { useAdminMode } from '@/contexts/AdminModeContext';
 
 const PATH_TO_STUDIO: Record<string, string> = {
-  '/': '/studio-x9/edit/accueil',
-  '/artiste': '/studio-x9/edit/artiste',
-  '/oeuvres': '/studio-x9/edit/oeuvres',
-  '/expositions': '/studio-x9/edit/expositions',
-  '/actualites': '/studio-x9/edit/actualites',
-  '/contact': '/studio-x9/edit/contact',
+  '/': '/studio/edit/accueil',
+  '/artiste': '/studio/edit/artiste',
+  '/oeuvres': '/studio/edit/oeuvres',
+  '/expositions': '/studio/edit/expositions',
+  '/actualites': '/studio/edit/actualites',
+  '/contact': '/studio/edit/contact',
 };
 
 export default function AdminFloatingControls() {
@@ -20,7 +20,7 @@ export default function AdminFloatingControls() {
 
   if (!isAdmin) return null;
 
-  const studioHref = PATH_TO_STUDIO[pathname ?? ''] ?? '/studio-x9/edit/accueil';
+  const studioHref = PATH_TO_STUDIO[pathname ?? ''] ?? '/studio/edit/accueil';
 
   const onLogout = async () => {
     setLoading(true);

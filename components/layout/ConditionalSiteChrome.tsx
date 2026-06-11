@@ -5,9 +5,9 @@ import { usePathname } from 'next/navigation';
 function isStudioRoute(pathname: string | null): boolean {
   if (!pathname) return false;
   return (
-    pathname.startsWith('/studio-x9/edit') ||
-    pathname === '/studio-x9/login' ||
-    pathname === '/studio-x9'
+    pathname.startsWith('/studio/edit') ||
+    pathname === '/studio/login' ||
+    pathname === '/studio'
   );
 }
 

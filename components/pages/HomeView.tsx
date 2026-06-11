@@ -44,7 +44,18 @@ function HomeContent({
 
   return (
     <main className={mode === 'public' ? 'pt-16 animate-fade-in-up' : ''}>
-      <HeroSlideshow subtitle={v(`${base}.subtitle`)} />
+      <HeroSlideshow
+        subtitle={mode === 'public' ? v(`${base}.subtitle`) : undefined}
+        subtitleSlot={
+          mode === 'studio' ? (
+            <EditableRegion blockKey={`${base}.subtitle`} label="Sous-titre hero" kind="text">
+              <p className="font-sans text-lg text-stone-300 max-w-xl mx-auto font-light tracking-wide px-6 py-1 rounded-full inline-block bg-white/10 backdrop-blur-sm">
+                {v(`${base}.subtitle`)}
+              </p>
+            </EditableRegion>
+          ) : undefined
+        }
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>

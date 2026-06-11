@@ -11,6 +11,26 @@ import {
 import type { CmsPage } from '@/lib/cms/registry';
 import { getBlockByKey, getCounterpartKey, getKeysForPage } from '@/lib/cms/registry';
 import { getDefaultContentValue } from '@/lib/cms/defaults';
+import {
+  createEmptyExposition,
+  EXPOSITIONS_ITEMS_KEY,
+  getExpositionFieldValue,
+  isExpositionFieldKey,
+  parseExpositions,
+  serializeExpositions,
+  setExpositionFieldValue,
+  type ExpositionItem,
+} from '@/lib/cms/expositions';
+import {
+  createEmptyOeuvre,
+  getOeuvreFieldValue,
+  isOeuvreFieldKey,
+  OEUVRES_WORKS_KEY,
+  parseOeuvresWorks,
+  serializeOeuvresWorks,
+  setOeuvreFieldValue,
+  type OeuvreItem,
+} from '@/lib/cms/oeuvres';
 import { editorValueToRichText } from '@/lib/cms/richText';
 import type { ContentKind } from '@/lib/cms/types';
 
@@ -34,6 +54,13 @@ interface CmsEditorContextValue {
   publishAll: () => Promise<boolean>;
   translateBlock: (key: string) => Promise<boolean>;
   hasDirtyChanges: () => boolean;
+  isBlockDirty: (key: string) => boolean;
+  getOeuvresWorks: () => OeuvreItem[];
+  addOeuvre: () => void;
+  removeOeuvre: (id: string) => void;
+  getExpositions: () => ExpositionItem[];
+  addExposition: () => void;
+  removeExposition: (id: string) => void;
 }
 
 const CmsEditorContext = createContext<CmsEditorContextValue | null>(null);
@@ -47,6 +74,24 @@ function buildInitialContent(page: CmsPage): Record<string, string> {
 
 function valueForSave(key: string, value: string, kind: ContentKind): string {
   return kind === 'richtext' ? editorValueToRichText(value) : value;
+}
+
+function resolveStorageKey(key: string): string {
+  if (isOeuvreFieldKey(key) && key !== OEUVRES_WORKS_KEY) return OEUVRES_WORKS_KEY;
+  if (isExpositionFieldKey(key) && key !== EXPOSITIONS_ITEMS_KEY) return EXPOSITIONS_ITEMS_KEY;
+  return key;
+}
+
+function readWorksJson(source: Record<string, string>): string {
+  return source[OEUVRES_WORKS_KEY] ?? getDefaultContentValue(OEUVRES_WORKS_KEY) ?? serializeOeuvresWorks([]);
+}
+
+function readExpositionsJson(source: Record<string, string>): string {
+  return (
+    source[EXPOSITIONS_ITEMS_KEY] ??
+    getDefaultContentValue(EXPOSITIONS_ITEMS_KEY) ??
+    serializeExpositions([])
+  );
 }
 
 export function CmsEditorProvider({
@@ -76,19 +121,122 @@ export function CmsEditorProvider({
   }, []);
 
   const getValue = useCallback(
-    (key: string) => drafts[key] ?? saved[key] ?? getDefaultContentValue(key) ?? '',
+    (key: string) => {
+      if (isOeuvreFieldKey(key)) {
+        const works = parseOeuvresWorks(readWorksJson(drafts));
+        return getOeuvreFieldValue(works, key) ?? '';
+      }
+      if (isExpositionFieldKey(key)) {
+        const items = parseExpositions(readExpositionsJson(drafts));
+        return getExpositionFieldValue(items, key) ?? '';
+      }
+      return drafts[key] ?? saved[key] ?? getDefaultContentValue(key) ?? '';
+    },
     [drafts, saved]
   );
 
   const updateDraft = useCallback((key: string, value: string) => {
+    if (isOeuvreFieldKey(key) && key !== OEUVRES_WORKS_KEY) {
+      setDrafts((prev) => {
+        const works = parseOeuvresWorks(readWorksJson(prev));
+        return {
+          ...prev,
+          [OEUVRES_WORKS_KEY]: serializeOeuvresWorks(setOeuvreFieldValue(works, key, value)),
+        };
+      });
+      return;
+    }
+    if (isExpositionFieldKey(key) && key !== EXPOSITIONS_ITEMS_KEY) {
+      setDrafts((prev) => {
+        const items = parseExpositions(readExpositionsJson(prev));
+        return {
+          ...prev,
+          [EXPOSITIONS_ITEMS_KEY]: serializeExpositions(setExpositionFieldValue(items, key, value)),
+        };
+      });
+      return;
+    }
     setDrafts((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const revertBlock = useCallback(
     (key: string) => {
+      if (isOeuvreFieldKey(key)) {
+        setDrafts((prev) => ({
+          ...prev,
+          [OEUVRES_WORKS_KEY]: saved[OEUVRES_WORKS_KEY] ?? readWorksJson(saved),
+        }));
+        return;
+      }
+      if (isExpositionFieldKey(key)) {
+        setDrafts((prev) => ({
+          ...prev,
+          [EXPOSITIONS_ITEMS_KEY]: saved[EXPOSITIONS_ITEMS_KEY] ?? readExpositionsJson(saved),
+        }));
+        return;
+      }
       setDrafts((prev) => ({ ...prev, [key]: saved[key] ?? '' }));
     },
     [saved]
+  );
+
+  const getOeuvresWorks = useCallback(
+    () => parseOeuvresWorks(readWorksJson(drafts)),
+    [drafts]
+  );
+
+  const addOeuvre = useCallback(() => {
+    setDrafts((prev) => {
+      const works = parseOeuvresWorks(readWorksJson(prev));
+      return {
+        ...prev,
+        [OEUVRES_WORKS_KEY]: serializeOeuvresWorks([...works, createEmptyOeuvre()]),
+      };
+    });
+  }, []);
+
+  const removeOeuvre = useCallback((id: string) => {
+    setDrafts((prev) => {
+      const works = parseOeuvresWorks(readWorksJson(prev));
+      return {
+        ...prev,
+        [OEUVRES_WORKS_KEY]: serializeOeuvresWorks(works.filter((work) => work.id !== id)),
+      };
+    });
+  }, []);
+
+  const getExpositions = useCallback(
+    () => parseExpositions(readExpositionsJson(drafts)),
+    [drafts]
+  );
+
+  const addExposition = useCallback(() => {
+    setDrafts((prev) => {
+      const items = parseExpositions(readExpositionsJson(prev));
+      return {
+        ...prev,
+        [EXPOSITIONS_ITEMS_KEY]: serializeExpositions([...items, createEmptyExposition()]),
+      };
+    });
+  }, []);
+
+  const removeExposition = useCallback((id: string) => {
+    setDrafts((prev) => {
+      const items = parseExpositions(readExpositionsJson(prev));
+      return {
+        ...prev,
+        [EXPOSITIONS_ITEMS_KEY]: serializeExpositions(items.filter((item) => item.id !== id)),
+      };
+    });
+  }, []);
+
+  const isBlockDirty = useCallback(
+    (key: string) => {
+      if (isOeuvreFieldKey(key)) return dirtyKeys.has(OEUVRES_WORKS_KEY);
+      if (isExpositionFieldKey(key)) return dirtyKeys.has(EXPOSITIONS_ITEMS_KEY);
+      return dirtyKeys.has(key);
+    },
+    [dirtyKeys]
   );
 
   const revertAll = useCallback(() => {
@@ -97,27 +245,36 @@ export function CmsEditorProvider({
 
   const publishBlock = useCallback(
     async (key: string): Promise<boolean> => {
+      const storageKey = resolveStorageKey(key);
       const block = getBlockByKey(key);
       if (!block) return false;
-      const raw = drafts[key] ?? saved[key] ?? '';
-      const value = valueForSave(key, raw, block.kind);
+      const raw = drafts[storageKey] ?? saved[storageKey] ?? '';
+      const isJsonCollection = storageKey === OEUVRES_WORKS_KEY || storageKey === EXPOSITIONS_ITEMS_KEY;
+      const value = isJsonCollection ? raw : valueForSave(key, getValue(key), block.kind);
 
       const response = await fetch('/api/admin/content', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, value, kind: block.kind }),
+        body: JSON.stringify({
+          key: storageKey,
+          value,
+          kind: isJsonCollection ? 'text' : block.kind,
+        }),
       });
 
       if (!response.ok) return false;
-      setSaved((prev) => ({ ...prev, [key]: raw }));
+      setSaved((prev) => ({ ...prev, [storageKey]: drafts[storageKey] ?? raw }));
       return true;
     },
-    [drafts, saved]
+    [drafts, saved, getValue]
   );
 
   const publishAll = useCallback(async (): Promise<boolean> => {
     const updates = Array.from(dirtyKeys)
       .map((key) => {
+        if (key === OEUVRES_WORKS_KEY || key === EXPOSITIONS_ITEMS_KEY) {
+          return { key, value: drafts[key] ?? '', kind: 'text' as ContentKind };
+        }
         const block = getBlockByKey(key);
         if (!block) return null;
         const raw = drafts[key] ?? '';
@@ -156,7 +313,7 @@ export function CmsEditorProvider({
       const targetBlock = targetKey ? getBlockByKey(targetKey) : null;
       if (!block?.lang || !targetKey || !targetBlock) return false;
 
-      const sourceText = drafts[key] ?? saved[key] ?? '';
+      const sourceText = getValue(key);
       const sourceLang = block.lang === 'fr' ? 'FR' : 'EN';
       const targetLang = block.lang === 'fr' ? 'EN' : 'FR';
 
@@ -169,20 +326,40 @@ export function CmsEditorProvider({
       if (!translateResponse.ok) return false;
       const data = (await translateResponse.json()) as { translatedText?: string };
       const translated = data.translatedText ?? '';
-      updateDraft(targetKey, translated);
+      const storageKey = resolveStorageKey(targetKey);
+      let persistedValue = '';
 
-      const value = valueForSave(targetKey, translated, targetBlock.kind);
+      if (storageKey === OEUVRES_WORKS_KEY) {
+        const works = setOeuvreFieldValue(parseOeuvresWorks(readWorksJson(drafts)), targetKey, translated);
+        persistedValue = serializeOeuvresWorks(works);
+        setDrafts((prev) => ({ ...prev, [OEUVRES_WORKS_KEY]: persistedValue }));
+      } else if (storageKey === EXPOSITIONS_ITEMS_KEY) {
+        const items = setExpositionFieldValue(parseExpositions(readExpositionsJson(drafts)), targetKey, translated);
+        persistedValue = serializeExpositions(items);
+        setDrafts((prev) => ({ ...prev, [EXPOSITIONS_ITEMS_KEY]: persistedValue }));
+      } else {
+        persistedValue = valueForSave(targetKey, translated, targetBlock.kind);
+        setDrafts((prev) => ({ ...prev, [targetKey]: translated }));
+      }
+
       const saveResponse = await fetch('/api/admin/content', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: targetKey, value, kind: targetBlock.kind }),
+        body: JSON.stringify({
+          key: storageKey,
+          value: persistedValue,
+          kind:
+            storageKey === OEUVRES_WORKS_KEY || storageKey === EXPOSITIONS_ITEMS_KEY
+              ? 'text'
+              : targetBlock.kind,
+        }),
       });
 
       if (!saveResponse.ok) return false;
-      setSaved((prev) => ({ ...prev, [targetKey]: translated }));
+      setSaved((prev) => ({ ...prev, [storageKey]: persistedValue }));
       return true;
     },
-    [drafts, saved, updateDraft]
+    [drafts, saved, updateDraft, getValue]
   );
 
   const value = useMemo(
@@ -206,6 +383,13 @@ export function CmsEditorProvider({
       publishAll,
       translateBlock,
       hasDirtyChanges: () => dirtyKeys.size > 0,
+      isBlockDirty,
+      getOeuvresWorks,
+      addOeuvre,
+      removeOeuvre,
+      getExpositions,
+      addExposition,
+      removeExposition,
     }),
     [
       page,
@@ -222,6 +406,13 @@ export function CmsEditorProvider({
       publishBlock,
       publishAll,
       translateBlock,
+      isBlockDirty,
+      getOeuvresWorks,
+      addOeuvre,
+      removeOeuvre,
+      getExpositions,
+      addExposition,
+      removeExposition,
     ]
   );
 

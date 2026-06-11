@@ -1,4 +1,10 @@
 import type { ContentKind } from '@/lib/cms/types';
+import {
+  EXPOSITIONS_ITEMS_KEY,
+  getExpositionBlockByKey,
+  getExpositionRegistryBlocks,
+} from '@/lib/cms/expositions';
+import { getOeuvreBlockByKey, getOeuvreRegistryBlocks, OEUVRES_WORKS_KEY } from '@/lib/cms/oeuvres';
 
 export type CmsPage =
   | 'accueil'
@@ -9,12 +15,12 @@ export type CmsPage =
   | 'contact';
 
 export const CMS_PAGES: Array<{ id: CmsPage; label: string; path: string }> = [
-  { id: 'accueil', label: 'Accueil', path: '/studio-x9/edit/accueil' },
-  { id: 'artiste', label: 'Artiste', path: '/studio-x9/edit/artiste' },
-  { id: 'oeuvres', label: 'Oeuvres', path: '/studio-x9/edit/oeuvres' },
-  { id: 'expositions', label: 'Expositions', path: '/studio-x9/edit/expositions' },
-  { id: 'actualites', label: 'Actualites', path: '/studio-x9/edit/actualites' },
-  { id: 'contact', label: 'Contact', path: '/studio-x9/edit/contact' },
+  { id: 'accueil', label: 'Accueil', path: '/studio/edit/accueil' },
+  { id: 'artiste', label: 'Artiste', path: '/studio/edit/artiste' },
+  { id: 'oeuvres', label: 'Oeuvres', path: '/studio/edit/oeuvres' },
+  { id: 'expositions', label: 'Expositions', path: '/studio/edit/expositions' },
+  { id: 'actualites', label: 'Actualites', path: '/studio/edit/actualites' },
+  { id: 'contact', label: 'Contact', path: '/studio/edit/contact' },
 ];
 
 export interface ContentBlock {
@@ -107,29 +113,16 @@ export const CONTENT_REGISTRY: ContentBlock[] = [
   // Oeuvres
   ...blocksForSection('oeuvres', 'oeuvres', [
     { field: 'title', label: 'Titre de la page', kind: 'text', order: 1 },
-    { field: 'oeuvreSymphonie', label: 'Oeuvre - La Symphonie', kind: 'text', order: 2 },
-    { field: 'oeuvreBigBang', label: 'Oeuvre - Le Big Bang de Louise', kind: 'text', order: 3 },
-    { field: 'oeuvreMantras', label: 'Oeuvre - Mantras', kind: 'text', order: 4 },
-    { field: 'oeuvreNun', label: 'Oeuvre - Nun', kind: 'text', order: 5 },
-    { field: 'oeuvreSouvenir', label: 'Oeuvre - Souvenir from Earth', kind: 'text', order: 6 },
-    { field: 'oeuvreSpeechscape', label: 'Oeuvre - Speechscape', kind: 'text', order: 7 },
   ]),
+  ...getOeuvreRegistryBlocks(),
 
   // Expositions
   ...blocksForSection('expositions', 'expositions', [
     { field: 'title', label: 'Titre de la page', kind: 'text', order: 1 },
     { field: 'aVenir', label: 'Badge a venir', kind: 'text', order: 2 },
     { field: 'enCours', label: 'Badge en cours', kind: 'text', order: 3 },
-    { field: 'expo1Titre', label: 'Exposition 1 - Titre', kind: 'text', order: 4 },
-    { field: 'expo1Lieu', label: 'Exposition 1 - Lieu', kind: 'text', order: 5 },
-    { field: 'expo1Date', label: 'Exposition 1 - Date', kind: 'text', order: 6 },
-    { field: 'expo2Titre', label: 'Exposition 2 - Titre', kind: 'text', order: 7 },
-    { field: 'expo2Lieu', label: 'Exposition 2 - Lieu', kind: 'text', order: 8 },
-    { field: 'expo2Date', label: 'Exposition 2 - Date', kind: 'text', order: 9 },
-    { field: 'expo3Titre', label: 'Exposition 3 - Titre', kind: 'text', order: 10 },
-    { field: 'expo3Lieu', label: 'Exposition 3 - Lieu', kind: 'text', order: 11 },
-    { field: 'expo3Date', label: 'Exposition 3 - Date', kind: 'text', order: 12 },
   ]),
+  ...getExpositionRegistryBlocks(),
 
   // Actualites
   ...blocksForSection('actualites', 'actualites', [
@@ -160,7 +153,7 @@ export const CONTENT_REGISTRY: ContentBlock[] = [
 ];
 
 export function getBlockByKey(key: string): ContentBlock | undefined {
-  return CONTENT_REGISTRY.find((b) => b.key === key);
+  return getOeuvreBlockByKey(key) ?? getExpositionBlockByKey(key) ?? CONTENT_REGISTRY.find((b) => b.key === key);
 }
 
 export function getBlocksForPage(page: CmsPage, lang?: 'fr' | 'en'): ContentBlock[] {
@@ -173,6 +166,24 @@ export function getBlocksForPage(page: CmsPage, lang?: 'fr' | 'en'): ContentBloc
 }
 
 export function getKeysForPage(page: CmsPage): string[] {
+  if (page === 'oeuvres') {
+    return [
+      'translations.fr.oeuvres.title',
+      'translations.en.oeuvres.title',
+      OEUVRES_WORKS_KEY,
+    ];
+  }
+  if (page === 'expositions') {
+    return [
+      'translations.fr.expositions.title',
+      'translations.en.expositions.title',
+      'translations.fr.expositions.aVenir',
+      'translations.en.expositions.aVenir',
+      'translations.fr.expositions.enCours',
+      'translations.en.expositions.enCours',
+      EXPOSITIONS_ITEMS_KEY,
+    ];
+  }
   return getBlocksForPage(page).map((b) => b.key);
 }
 
@@ -180,6 +191,9 @@ export function getCounterpartKey(key: string): string | null {
   const block = getBlockByKey(key);
   if (!block?.lang) return null;
   const targetLang = block.lang === 'fr' ? 'en' : 'fr';
+  if (key.includes('.works.') || key.includes('.items.')) {
+    return key.replace(/\.(fr|en)$/, `.${targetLang}`);
+  }
   return key.replace(`.${block.lang}.`, `.${targetLang}.`);
 }
 

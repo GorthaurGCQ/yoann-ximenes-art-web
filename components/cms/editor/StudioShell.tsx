@@ -41,7 +41,7 @@ function StudioContentLoader({ page }: { page: CmsPage }) {
   return (
     <>
       <div className="md:hidden flex flex-col items-center justify-center min-h-screen bg-stone-950 text-stone-300 px-6 text-center">
-        <p className="font-serif text-xl mb-2">Studio X9</p>
+        <p className="font-serif text-xl mb-2">Studio</p>
         <p className="text-sm text-stone-500">
           L&apos;editeur visuel necessite une tablette ou un ordinateur (ecran &ge; 768px).
         </p>

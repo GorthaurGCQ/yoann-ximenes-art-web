@@ -1,3 +1,9 @@
+import {
+  buildDefaultExpositions,
+  EXPOSITIONS_ITEMS_KEY,
+  serializeExpositions,
+} from '@/lib/cms/expositions';
+import { serializeOeuvresWorks, buildDefaultOeuvresWorks, OEUVRES_WORKS_KEY } from '@/lib/cms/oeuvres';
 import { translations } from '@/lib/translations';
 import { worksData } from '@/lib/worksData';
 
@@ -25,6 +31,8 @@ export function getDefaultContentValue(key: string): string | null {
     'artiste.profileImage.src': '/Images/yoann-ximenes-portrait.jpeg',
     'artiste.profileImage.alt': "Portrait de l'artiste",
     'accueil.expoImage.src': '/Images/Oeuvres/Speechscape/speechscape_1.jpg',
+    [OEUVRES_WORKS_KEY]: serializeOeuvresWorks(buildDefaultOeuvresWorks()),
+    [EXPOSITIONS_ITEMS_KEY]: serializeExpositions(buildDefaultExpositions()),
   };
 
   return staticDefaults[key] ?? null;

@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       return;
     }
 
-    window.location.href = '/studio-x9/edit/accueil';
+    window.location.href = '/studio/edit/accueil';
   };
 
   return (

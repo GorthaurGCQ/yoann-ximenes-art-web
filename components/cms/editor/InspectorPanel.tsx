@@ -15,7 +15,7 @@ export default function InspectorPanel() {
     revertBlock,
     publishBlock,
     translateBlock,
-    dirtyKeys,
+    isBlockDirty,
   } = useCmsEditor();
   const [saving, setSaving] = useState(false);
   const [translating, setTranslating] = useState(false);
@@ -24,8 +24,8 @@ export default function InspectorPanel() {
 
   if (!selectedKey) {
     return (
-      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 p-6 text-stone-400 text-sm">
-        <p>Cliquez sur un element de la page pour le modifier.</p>
+      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 p-5 text-stone-400 text-sm w-[280px] shrink-0">
+        <p>Cliquez sur un texte pour l&apos;editer directement sur la page. Le panneau sert a traduire, sauvegarder et gerer les images.</p>
       </aside>
     );
   }
@@ -33,8 +33,8 @@ export default function InspectorPanel() {
   const block = getBlockByKey(selectedKey);
   if (!block) return null;
 
-  const value = drafts[selectedKey] ?? getValue(selectedKey);
-  const isDirty = dirtyKeys.has(selectedKey);
+  const value = getValue(selectedKey);
+  const isDirty = isBlockDirty(selectedKey);
   const counterpart = getCounterpartKey(selectedKey);
   const isUntranslated =
     block.lang === 'en' &&
@@ -85,7 +85,7 @@ export default function InspectorPanel() {
   return (
     <>
       {/* Desktop inspector */}
-      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 w-[380px] shrink-0 overflow-auto">
+      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 w-[280px] shrink-0 overflow-auto">
         <div className="p-5 space-y-4 sticky top-0">
           <div title={selectedKey}>
             <h2 className="font-serif text-xl text-stone-100">{block.label}</h2>
