@@ -5,6 +5,11 @@ import { AdminModeProvider } from '@/contexts/AdminModeContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AdminFloatingControls from '@/components/cms/AdminFloatingControls';
+import {
+  ConditionalAdminControls,
+  ConditionalFooter,
+  ConditionalNavbar,
+} from '@/components/layout/ConditionalSiteChrome';
 import { getAdminSessionFromCookies } from '@/lib/auth/session';
 
 export const metadata: Metadata = {
@@ -21,10 +26,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-sans antialiased text-stone-100 bg-stone-950">
         <AdminModeProvider initialIsAdmin={Boolean(session)}>
           <LanguageProvider>
-            <Navbar />
+            <ConditionalNavbar>
+              <Navbar />
+            </ConditionalNavbar>
             {children}
-            <Footer />
-            <AdminFloatingControls />
+            <ConditionalFooter>
+              <Footer />
+            </ConditionalFooter>
+            <ConditionalAdminControls>
+              <AdminFloatingControls />
+            </ConditionalAdminControls>
           </LanguageProvider>
         </AdminModeProvider>
       </body>

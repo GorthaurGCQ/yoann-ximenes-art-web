@@ -24,6 +24,7 @@ export function getDefaultContentValue(key: string): string | null {
   const staticDefaults: Record<string, string> = {
     'artiste.profileImage.src': '/Images/yoann-ximenes-portrait.jpeg',
     'artiste.profileImage.alt': "Portrait de l'artiste",
+    'accueil.expoImage.src': '/Images/Oeuvres/Speechscape/speechscape_1.jpg',
   };
 
   return staticDefaults[key] ?? null;

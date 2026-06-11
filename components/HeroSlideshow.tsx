@@ -5,8 +5,9 @@ import Image from 'next/image';
 import { heroSlides } from '@/lib/worksData';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export default function HeroSlideshow() {
+export default function HeroSlideshow({ subtitle }: { subtitle?: string }) {
   const { t } = useLanguage();
+  const displaySubtitle = subtitle ?? t.index.subtitle;
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function HeroSlideshow() {
         </h1>
         <div className="block">
           <p className="font-sans text-lg text-stone-300 max-w-xl mx-auto font-light tracking-wide px-6 py-1 rounded-full inline-block transition-all duration-500 bg-white/10 backdrop-blur-sm hover:bg-white/40 hover:scale-105 hover:shadow-lg cursor-default">
-            {t.index.subtitle}
+            {displaySubtitle}
           </p>
         </div>
       </div>

@@ -1,12 +1,12 @@
 import 'server-only';
 
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
 
 export const ADMIN_SESSION_COOKIE = 'yx_admin_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 
-export interface AdminSessionPayload {
+export interface AdminSessionPayload extends JWTPayload {
   email: string;
   role: 'admin';
 }
