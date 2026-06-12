@@ -31,6 +31,10 @@ export function getDefaultContentValue(key: string): string | null {
     'artiste.profileImage.src': '/Images/yoann-ximenes-portrait.jpeg',
     'artiste.profileImage.alt': "Portrait de l'artiste",
     'accueil.expoImage.src': '/Images/Oeuvres/Speechscape/speechscape_1.jpg',
+    'actualites.instagramImage1.src':
+      '/Images/Oeuvres/La_symphony/1.XimenesYoann,La symphonie des vagabonds.jpg',
+    'actualites.instagramImage2.src': '/Images/Oeuvres/Le Big Bang de Louise/Le Big Bang de Louise.jpg',
+    'actualites.instagramImage3.src': '/Images/Oeuvres/Mantras/1.Mantras.jpg',
     [OEUVRES_WORKS_KEY]: serializeOeuvresWorks(buildDefaultOeuvresWorks()),
     [EXPOSITIONS_ITEMS_KEY]: serializeExpositions(buildDefaultExpositions()),
   };
