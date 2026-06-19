@@ -52,7 +52,13 @@ function ContactContent({ mode, lang, v }: { mode: 'public' | 'studio'; lang: 'f
           <div>
             {wrap(`${base}.reseaux`, 'Reseaux', 'text', <h3 className="text-stone-100 font-medium mb-2">{v(`${base}.reseaux`)}</h3>)}
             <div className="flex justify-center space-x-4 mt-2">
-              <a href="#" className="text-stone-500 hover:text-stone-300" aria-label="Instagram">
+              <a
+                href="https://www.instagram.com/yoann.ximenes/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-stone-500 hover:text-stone-300"
+                aria-label="Instagram"
+              >
                 <InstagramIcon size={20} />
               </a>
             </div>

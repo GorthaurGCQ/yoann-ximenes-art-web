@@ -18,7 +18,9 @@ export default function LanguageToggle() {
   };
 
   return (
-    <div className="flex rounded-full border border-stone-700 overflow-hidden text-xs">
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] uppercase tracking-wider text-stone-500 hidden sm:inline">Apercu</span>
+      <div className="flex rounded-full border border-stone-700 overflow-hidden text-xs">
       {(['fr', 'en'] as const).map((l) => (
         <button
           key={l}
@@ -31,6 +33,7 @@ export default function LanguageToggle() {
           {l}
         </button>
       ))}
+      </div>
     </div>
   );
 }

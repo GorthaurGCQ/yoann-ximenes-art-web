@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -52,7 +53,6 @@ interface CmsEditorContextValue {
   revertAll: () => void;
   publishBlock: (key: string) => Promise<boolean>;
   publishAll: () => Promise<boolean>;
-  translateBlock: (key: string) => Promise<boolean>;
   hasDirtyChanges: () => boolean;
   isBlockDirty: (key: string) => boolean;
   getOeuvresWorks: () => OeuvreItem[];
@@ -102,10 +102,22 @@ export function CmsEditorProvider({
   initialPage: CmsPage;
 }) {
   const [page, setPage] = useState<CmsPage>(initialPage);
-  const [lang, setLang] = useState<'fr' | 'en'>('fr');
+  const [lang, setLangState] = useState<'fr' | 'en'>('fr');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [saved, setSaved] = useState<Record<string, string>>(() => buildInitialContent(initialPage));
   const [drafts, setDrafts] = useState<Record<string, string>>(() => buildInitialContent(initialPage));
+
+  useEffect(() => {
+    const stored = localStorage.getItem('language');
+    if (stored === 'fr' || stored === 'en') {
+      setLangState(stored);
+    }
+  }, []);
+
+  const setLang = useCallback((next: 'fr' | 'en') => {
+    setLangState(next);
+    localStorage.setItem('language', next);
+  }, []);
 
   const dirtyKeys = useMemo(() => {
     const keys = new Set<string>();
@@ -306,62 +318,6 @@ export function CmsEditorProvider({
     return true;
   }, [dirtyKeys, drafts]);
 
-  const translateBlock = useCallback(
-    async (key: string): Promise<boolean> => {
-      const block = getBlockByKey(key);
-      const targetKey = getCounterpartKey(key);
-      const targetBlock = targetKey ? getBlockByKey(targetKey) : null;
-      if (!block?.lang || !targetKey || !targetBlock) return false;
-
-      const sourceText = getValue(key);
-      const sourceLang = block.lang === 'fr' ? 'FR' : 'EN';
-      const targetLang = block.lang === 'fr' ? 'EN' : 'FR';
-
-      const translateResponse = await fetch('/api/admin/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: sourceText, sourceLang, targetLang }),
-      });
-
-      if (!translateResponse.ok) return false;
-      const data = (await translateResponse.json()) as { translatedText?: string };
-      const translated = data.translatedText ?? '';
-      const storageKey = resolveStorageKey(targetKey);
-      let persistedValue = '';
-
-      if (storageKey === OEUVRES_WORKS_KEY) {
-        const works = setOeuvreFieldValue(parseOeuvresWorks(readWorksJson(drafts)), targetKey, translated);
-        persistedValue = serializeOeuvresWorks(works);
-        setDrafts((prev) => ({ ...prev, [OEUVRES_WORKS_KEY]: persistedValue }));
-      } else if (storageKey === EXPOSITIONS_ITEMS_KEY) {
-        const items = setExpositionFieldValue(parseExpositions(readExpositionsJson(drafts)), targetKey, translated);
-        persistedValue = serializeExpositions(items);
-        setDrafts((prev) => ({ ...prev, [EXPOSITIONS_ITEMS_KEY]: persistedValue }));
-      } else {
-        persistedValue = valueForSave(targetKey, translated, targetBlock.kind);
-        setDrafts((prev) => ({ ...prev, [targetKey]: translated }));
-      }
-
-      const saveResponse = await fetch('/api/admin/content', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: storageKey,
-          value: persistedValue,
-          kind:
-            storageKey === OEUVRES_WORKS_KEY || storageKey === EXPOSITIONS_ITEMS_KEY
-              ? 'text'
-              : targetBlock.kind,
-        }),
-      });
-
-      if (!saveResponse.ok) return false;
-      setSaved((prev) => ({ ...prev, [storageKey]: persistedValue }));
-      return true;
-    },
-    [drafts, saved, updateDraft, getValue]
-  );
-
   const value = useMemo(
     () => ({
       page,
@@ -381,7 +337,6 @@ export function CmsEditorProvider({
       revertAll,
       publishBlock,
       publishAll,
-      translateBlock,
       hasDirtyChanges: () => dirtyKeys.size > 0,
       isBlockDirty,
       getOeuvresWorks,
@@ -405,7 +360,6 @@ export function CmsEditorProvider({
       revertAll,
       publishBlock,
       publishAll,
-      translateBlock,
       isBlockDirty,
       getOeuvresWorks,
       addOeuvre,

@@ -4,28 +4,78 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useCmsEditor } from '@/contexts/CmsEditorContext';
 import { getBlockByKey, getCounterpartKey } from '@/lib/cms/registry';
+import type { ContentKind } from '@/lib/cms/types';
 import { editorValueToRichText, richTextToEditorValue } from '@/lib/cms/richText';
+
+function resolveLangKeys(selectedKey: string): { fr: string; en: string } | null {
+  const counterpart = getCounterpartKey(selectedKey);
+  if (!counterpart) return null;
+
+  const block = getBlockByKey(selectedKey);
+  if (block?.lang === 'fr') return { fr: selectedKey, en: counterpart };
+  if (block?.lang === 'en') return { fr: counterpart, en: selectedKey };
+  if (selectedKey.endsWith('.fr')) return { fr: selectedKey, en: counterpart };
+  if (selectedKey.endsWith('.en')) return { fr: counterpart, en: selectedKey };
+
+  return null;
+}
+
+function LangField({
+  label,
+  fieldKey,
+  kind,
+  value,
+  onChange,
+}: {
+  label: string;
+  fieldKey: string;
+  kind: ContentKind;
+  value: string;
+  onChange: (key: string, value: string) => void;
+}) {
+  const editorValue = kind === 'richtext' ? richTextToEditorValue(value) : value;
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10px] uppercase tracking-wider text-stone-500">{label}</label>
+      {kind === 'richtext' ? (
+        <textarea
+          value={editorValue}
+          onChange={(e) => onChange(fieldKey, e.target.value)}
+          className="w-full min-h-28 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
+        />
+      ) : (
+        <input
+          value={editorValue}
+          onChange={(e) => onChange(fieldKey, e.target.value)}
+          className="w-full bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
+        />
+      )}
+    </div>
+  );
+}
 
 export default function InspectorPanel() {
   const {
+    lang,
     selectedKey,
-    drafts,
     getValue,
     updateDraft,
     revertBlock,
     publishBlock,
-    translateBlock,
     isBlockDirty,
   } = useCmsEditor();
   const [saving, setSaving] = useState(false);
-  const [translating, setTranslating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   if (!selectedKey) {
     return (
-      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 p-5 text-stone-400 text-sm w-[280px] shrink-0">
-        <p>Cliquez sur un texte pour l&apos;editer directement sur la page. Le panneau sert a traduire, sauvegarder et gerer les images.</p>
+      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 p-5 text-stone-400 text-sm w-[320px] shrink-0">
+        <p>
+          Cliquez sur un texte pour l&apos;editer. Le panneau affiche les champs FR et EN. Utilisez le
+          selecteur FR/EN en haut pour previsualiser la langue comme sur le site public.
+        </p>
       </aside>
     );
   }
@@ -33,29 +83,33 @@ export default function InspectorPanel() {
   const block = getBlockByKey(selectedKey);
   if (!block) return null;
 
+  const langKeys = resolveLangKeys(selectedKey);
   const value = getValue(selectedKey);
-  const isDirty = isBlockDirty(selectedKey);
-  const counterpart = getCounterpartKey(selectedKey);
+  const keysToManage = langKeys ? [langKeys.fr, langKeys.en] : [selectedKey];
+  const isDirty = keysToManage.some((key) => isBlockDirty(key));
   const isUntranslated =
-    block.lang === 'en' &&
-    !value.trim() &&
-    Boolean(counterpart && getValue(counterpart).trim());
+    langKeys !== null &&
+    !getValue(langKeys.en).trim() &&
+    Boolean(getValue(langKeys.fr).trim());
 
   const onSave = async () => {
     setSaving(true);
     setNotice(null);
-    const ok = await publishBlock(selectedKey);
+    let allOk = true;
+    for (const key of keysToManage) {
+      if (isBlockDirty(key)) {
+        const ok = await publishBlock(key);
+        if (!ok) allOk = false;
+      }
+    }
     setSaving(false);
-    setNotice(ok ? 'Sauvegarde reussie.' : 'Erreur de sauvegarde.');
+    setNotice(allOk ? 'Sauvegarde reussie.' : 'Erreur de sauvegarde.');
   };
 
-  const onTranslate = async () => {
-    if (!counterpart) return;
-    setTranslating(true);
-    setNotice(null);
-    const ok = await translateBlock(selectedKey);
-    setTranslating(false);
-    setNotice(ok ? `Traduit et sauvegarde vers ${counterpart}.` : 'Erreur DeepL.');
+  const onRevert = () => {
+    for (const key of keysToManage) {
+      if (isBlockDirty(key)) revertBlock(key);
+    }
   };
 
   const onImportImage = async (file: File) => {
@@ -76,16 +130,17 @@ export default function InspectorPanel() {
     }
   };
 
-  const editorValue =
-    block.kind === 'richtext' ? richTextToEditorValue(value) : value;
-
+  const previewKey = langKeys ? (lang === 'fr' ? langKeys.fr : langKeys.en) : selectedKey;
+  const previewBlock = getBlockByKey(previewKey) ?? block;
+  const previewValue = getValue(previewKey);
+  const previewEditorValue =
+    previewBlock.kind === 'richtext' ? richTextToEditorValue(previewValue) : previewValue;
   const previewHtml =
-    block.kind === 'richtext' ? editorValueToRichText(editorValue) : null;
+    previewBlock.kind === 'richtext' ? editorValueToRichText(previewEditorValue) : null;
 
   return (
     <>
-      {/* Desktop inspector */}
-      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 w-[280px] shrink-0 overflow-auto">
+      <aside className="hidden lg:flex lg:flex-col border-l border-stone-800 bg-stone-900/60 w-[320px] shrink-0 overflow-auto">
         <div className="p-5 space-y-4 sticky top-0">
           <div title={selectedKey}>
             <h2 className="font-serif text-xl text-stone-100">{block.label}</h2>
@@ -93,7 +148,7 @@ export default function InspectorPanel() {
               <p className="text-xs text-stone-500 mt-1">{block.description}</p>
             )}
             {isUntranslated && (
-              <p className="text-xs text-rose-400 mt-2">Non traduit — version FR disponible</p>
+              <p className="text-xs text-rose-400 mt-2">Version EN vide — a completer</p>
             )}
           </div>
 
@@ -130,15 +185,32 @@ export default function InspectorPanel() {
                 )}
               </div>
             </div>
+          ) : langKeys ? (
+            <div className="space-y-4">
+              <LangField
+                label="Francais"
+                fieldKey={langKeys.fr}
+                kind={block.kind}
+                value={getValue(langKeys.fr)}
+                onChange={updateDraft}
+              />
+              <LangField
+                label="Anglais"
+                fieldKey={langKeys.en}
+                kind={block.kind}
+                value={getValue(langKeys.en)}
+                onChange={updateDraft}
+              />
+            </div>
           ) : block.kind === 'richtext' ? (
             <textarea
-              value={editorValue}
+              value={richTextToEditorValue(value)}
               onChange={(e) => updateDraft(selectedKey, e.target.value)}
               className="w-full min-h-40 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
             />
           ) : (
             <input
-              value={editorValue}
+              value={value}
               onChange={(e) => updateDraft(selectedKey, e.target.value)}
               className="w-full bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
             />
@@ -153,20 +225,10 @@ export default function InspectorPanel() {
             >
               {saving ? 'Sauvegarde...' : 'Sauvegarder'}
             </button>
-            {counterpart && block.kind !== 'image' && (
-              <button
-                type="button"
-                onClick={onTranslate}
-                disabled={translating}
-                className="text-sm px-3 py-1.5 rounded border border-stone-600 text-stone-200 disabled:opacity-50"
-              >
-                {translating ? 'Traduction...' : `Traduire -> ${counterpart.includes('.en.') ? 'EN' : 'FR'}`}
-              </button>
-            )}
             {isDirty && (
               <button
                 type="button"
-                onClick={() => revertBlock(selectedKey)}
+                onClick={onRevert}
                 className="text-sm px-3 py-1.5 rounded border border-stone-700 text-stone-300"
               >
                 Annuler
@@ -176,37 +238,51 @@ export default function InspectorPanel() {
 
           {notice && <p className="text-xs text-stone-400">{notice}</p>}
 
-          <div className="border border-stone-800 rounded p-3 bg-stone-950/50">
-            <p className="text-xs uppercase tracking-wider text-stone-500 mb-2">Apercu actuel</p>
-            {block.kind === 'richtext' && previewHtml ? (
-              <div
-                className="text-sm text-stone-200 leading-relaxed space-y-2"
-                dangerouslySetInnerHTML={{ __html: previewHtml }}
-              />
-            ) : block.kind === 'image' ? (
-              <div className="relative aspect-[3/4] max-w-[200px] bg-stone-900 rounded overflow-hidden">
-                {value && (
-                  <Image src={value} alt="" fill className="object-cover grayscale opacity-90" sizes="200px" />
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-stone-200">{editorValue}</p>
-            )}
-          </div>
+          {block.kind !== 'image' && (
+            <div className="border border-stone-800 rounded p-3 bg-stone-950/50">
+              <p className="text-xs uppercase tracking-wider text-stone-500 mb-2">
+                Apercu ({lang.toUpperCase()})
+              </p>
+              {previewBlock.kind === 'richtext' && previewHtml ? (
+                <div
+                  className="text-sm text-stone-200 leading-relaxed space-y-2"
+                  dangerouslySetInnerHTML={{ __html: previewHtml }}
+                />
+              ) : (
+                <p className="text-sm text-stone-200">{previewEditorValue}</p>
+              )}
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* Tablet bottom sheet */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-stone-900 border-t border-stone-700 max-h-[50vh] overflow-auto p-4">
         <p className="font-medium text-stone-100 mb-2">{block.label}</p>
-        {block.kind !== 'image' ? (
+        {block.kind === 'image' ? (
+          <p className="text-xs text-stone-400 break-all mb-2">{value}</p>
+        ) : langKeys ? (
+          <div className="space-y-3 mb-2">
+            <LangField
+              label="Francais"
+              fieldKey={langKeys.fr}
+              kind={block.kind}
+              value={getValue(langKeys.fr)}
+              onChange={updateDraft}
+            />
+            <LangField
+              label="Anglais"
+              fieldKey={langKeys.en}
+              kind={block.kind}
+              value={getValue(langKeys.en)}
+              onChange={updateDraft}
+            />
+          </div>
+        ) : (
           <textarea
-            value={editorValue}
+            value={block.kind === 'richtext' ? richTextToEditorValue(value) : value}
             onChange={(e) => updateDraft(selectedKey, e.target.value)}
             className="w-full min-h-24 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100 mb-2"
           />
-        ) : (
-          <p className="text-xs text-stone-400 break-all mb-2">{value}</p>
         )}
         <div className="flex gap-2">
           <button

@@ -58,8 +58,6 @@ node -e "console.log(require('bcryptjs').hashSync('TonMotDePasseFort', 12))"
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD` (simple, dev) ou `ADMIN_PASSWORD_HASH` (recommandé)
 - `ADMIN_SESSION_SECRET`
-- `DEEPL_API_KEY` (pour la traduction automatique FR/EN)
-- `DEEPL_API_URL` (optionnel, API Free par défaut)
 
 ### APIs
 
@@ -68,5 +66,4 @@ node -e "console.log(require('bcryptjs').hashSync('TonMotDePasseFort', 12))"
 - `GET /api/admin/session`
 - `PATCH /api/admin/content` (protégée)
 - `GET /api/admin/content` (logs, protégée)
-- `POST /api/admin/translate` (DeepL, protégée)
 - `GET /api/cms/content?keys=key1,key2` (lecture publique + fallback)

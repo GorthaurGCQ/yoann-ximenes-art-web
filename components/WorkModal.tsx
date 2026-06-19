@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X } from 'lucide-react';
@@ -12,23 +12,23 @@ interface WorkModalProps {
   onClose: () => void;
 }
 
-export default function WorkModal({ categoryKey, data: dataProp, onClose }: WorkModalProps) {
+function subscribeNoop() {
+  return () => {};
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+function WorkModalDialog({ data, onClose }: { data: WorkData; onClose: () => void }) {
   const [activeImage, setActiveImage] = useState(0);
   const [fading, setFading] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  const data = dataProp ?? null;
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setActiveImage(0);
-  }, [categoryKey, dataProp]);
-
-  useEffect(() => {
-    if (!data) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -48,9 +48,7 @@ export default function WorkModal({ categoryKey, data: dataProp, onClose }: Work
       document.body.style.overflow = '';
       window.scrollTo(0, scrollY);
     };
-  }, [data, onClose]);
-
-  if (!data || !mounted) return null;
+  }, [onClose]);
 
   const handleThumb = (index: number) => {
     if (index === activeImage) return;
@@ -61,7 +59,7 @@ export default function WorkModal({ categoryKey, data: dataProp, onClose }: Work
     }, 200);
   };
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-stone-900/90 backdrop-blur-sm" onClick={onClose} aria-hidden />
 
@@ -116,7 +114,20 @@ export default function WorkModal({ categoryKey, data: dataProp, onClose }: Work
           </div>
         </div>
       </div>
-    </div>,
+    </div>
+  );
+}
+
+export default function WorkModal({ categoryKey, data: dataProp, onClose }: WorkModalProps) {
+  const mounted = useSyncExternalStore(subscribeNoop, getClientSnapshot, getServerSnapshot);
+  const data = dataProp ?? null;
+
+  if (!data || !mounted) return null;
+
+  const workKey = categoryKey ?? data.title;
+
+  return createPortal(
+    <WorkModalDialog key={workKey} data={data} onClose={onClose} />,
     document.body
   );
 }

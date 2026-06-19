@@ -11,7 +11,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
         <div className="flex justify-center space-x-6 mb-8">
           <a
-            href="#"
+            href="https://www.instagram.com/yoann.ximenes/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-stone-500 hover:text-stone-300 transition-colors hover:scale-110 transform duration-300"
             aria-label="Instagram"
           >
