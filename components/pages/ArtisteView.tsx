@@ -65,7 +65,7 @@ function ArtisteContent({
 
   return (
     <main className={`${mode === 'public' ? 'pt-16 animate-fade-in-up' : 'p-4'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
           <div className="relative aspect-[3/4] bg-stone-900 border border-stone-800 group overflow-hidden">
             {wrap(
@@ -109,7 +109,7 @@ function ArtisteContent({
               {wrap(`${baseKey}.text4`, 'Paragraphe 4', 'richtext', <p>{v(`${baseKey}.text4`)}</p>)}
             </div>
 
-            <div className="mt-12 border-t border-stone-800 pt-8">
+            <div className="mt-12 border-t border-accent/20 pt-8">
               {wrap(
                 `${baseKey}.distinctions`,
                 'Titre distinctions',

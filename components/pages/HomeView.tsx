@@ -56,7 +56,7 @@ function HomeContent({
           ) : undefined
         }
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
             {wrap(
@@ -75,7 +75,7 @@ function HomeContent({
               `${base}.enSavoirPlus`,
               'Lien en savoir plus',
               'text',
-              <Link href="/expositions" className="text-stone-100 font-medium hover:underline decoration-1 underline-offset-4 decoration-stone-500">
+              <Link href="/expositions" className="text-accent font-medium hover:underline decoration-1 underline-offset-4 decoration-accent/50 transition-colors">
                 {v(`${base}.enSavoirPlus`)}
               </Link>
             )}

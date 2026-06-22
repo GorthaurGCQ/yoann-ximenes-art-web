@@ -99,7 +99,7 @@ function ExpositionsContent({
             return (
               <article
                 key={item.id}
-                className="relative flex flex-col md:flex-row md:items-baseline border-b border-stone-800 pb-12 p-4 rounded-lg"
+                className="relative flex flex-col md:flex-row md:items-baseline border-b border-accent/20 pb-12 p-4 rounded-lg"
               >
                 {mode === 'studio' && onRemove && (
                   <button
@@ -174,7 +174,7 @@ function ExpositionsContent({
                       </div>
                     ) : (
                       label && (
-                        <span className="inline-block mt-1 px-2 py-0.5 text-[10px] uppercase tracking-widest bg-stone-800 text-stone-300">
+                        <span className="inline-block mt-1 px-2 py-0.5 text-[10px] uppercase tracking-widest bg-accent text-stone-950 rounded-[2px]">
                           {label}
                         </span>
                       )

@@ -24,9 +24,9 @@ export default function HeroSlideshow({
   }, []);
 
   return (
-    <div className="h-[85vh] w-full relative bg-stone-900 overflow-hidden flex items-center justify-center">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-stone-950/10 z-10" />
+    <div className="h-[85vh] w-full relative bg-stone-300 overflow-hidden flex items-center justify-center">
+      {/* Overlay — forcé noir pour garantir lisibilité du texte sur photos */}
+      <div className="absolute inset-0 bg-black/40 z-10" />
 
       {/* Slides */}
       <div className="absolute inset-0 w-full h-full">
@@ -47,12 +47,12 @@ export default function HeroSlideshow({
 
       {/* Titre central */}
       <div className="relative z-20 text-center px-4">
-        <h1 className="font-serif text-5xl md:text-7xl text-stone-50 mb-4 px-8 py-2 inline-block rounded-full transition-all duration-500 bg-white/10 backdrop-blur-sm hover:bg-white/40 hover:scale-105 hover:shadow-lg cursor-default">
-          YOANN XIMENES
+        <h1 className="font-serif text-5xl md:text-7xl text-white mb-4 px-8 py-2 inline-block rounded-full transition-all duration-500 bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:scale-105 hover:shadow-lg cursor-default">
+          Yoann Ximenes
         </h1>
         <div className="block">
           {subtitleSlot ?? (
-            <p className="font-sans text-lg text-stone-300 max-w-xl mx-auto font-light tracking-wide px-6 py-1 rounded-full inline-block transition-all duration-500 bg-white/10 backdrop-blur-sm hover:bg-white/40 hover:scale-105 hover:shadow-lg cursor-default">
+            <p className="font-sans text-lg text-white/80 max-w-xl mx-auto font-light tracking-wide px-6 py-1 rounded-full inline-block transition-all duration-500 bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:scale-105 hover:shadow-lg cursor-default">
               {displaySubtitle}
             </p>
           )}

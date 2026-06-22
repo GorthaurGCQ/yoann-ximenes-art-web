@@ -1,28 +1,38 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* Palette stone inversée (thème clair-crème) */
-  --color-stone-50: #000000;
-  --color-stone-100: #0a0a0a;
-  --color-stone-200: #1c1917;
-  --color-stone-300: #292524;
-  --color-stone-400: #44403c;
-  --color-stone-500: #57534e;
-  --color-stone-600: #78716c;
-  --color-stone-700: #a8a29e;
-  --color-stone-800: #d6d3d1;
-  --color-stone-900: #f5f5f4;
-  --color-stone-950: #ffffff;
+  /* ─── Palette ivoire / brun chaud ───────────────────────────────────────
+     Echelle stone remappée : stone-950 = ivoire principal (fond),
+     stone-100 = brun très foncé (texte).
+     Tous les composants existants héritent automatiquement. */
+  --color-stone-50:  #0D0907;
+  --color-stone-100: #1A1410;
+  --color-stone-200: #1E1410;
+  --color-stone-300: #2D201A;
+  --color-stone-400: #4A3D35;
+  --color-stone-500: #6B5D52;
+  --color-stone-600: #8C7E72;
+  --color-stone-700: #B8AFA4;
+  --color-stone-800: #DDD8CF;
+  --color-stone-900: #EFEBE4;
+  --color-stone-950: #F8F5F0;
 
-  /* Polices */
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', serif;
+  /* ─── Couleur accent : Terre cuite ──────────────────────────────────────
+     Matière brute sublimée — argile, feu, volume.
+     S'inscrit dans les codes des galeries contemporaines françaises. */
+  --color-accent:       #C4622D;
+  --color-accent-light: #D4794A;
+  --color-accent-dark:  #A34E22;
 
-  /* Animations */
+  /* ─── Typographie ────────────────────────────────────────────────────── */
+  --font-sans:  'Inter', sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+
+  /* ─── Animations ─────────────────────────────────────────────────────── */
   --animate-fade-in-up: fadeInUp 1s ease-out forwards;
-  --animate-slow-zoom: slowZoom 20s linear infinite alternate;
-  --animate-scroll: scroll 40s linear infinite;
+  --animate-slow-zoom:  slowZoom 20s linear infinite alternate;
+  --animate-scroll:     scroll 40s linear infinite;
 }
 
 @keyframes fadeInUp {

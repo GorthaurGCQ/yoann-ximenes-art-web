@@ -26,65 +26,64 @@ export default function Navbar() {
   };
 
   const LangSelector = () => (
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={() => setLang('fr')}
-        className={`text-xs uppercase tracking-widest px-2 py-1 rounded transition-colors ${
-          lang === 'fr'
-            ? 'text-stone-100 bg-stone-800'
-            : 'text-stone-400 hover:text-stone-100'
-        }`}
-      >
-        FR
-      </button>
-      <button
-        onClick={() => setLang('en')}
-        className={`text-xs uppercase tracking-widest px-2 py-1 rounded transition-colors ${
-          lang === 'en'
-            ? 'text-stone-100 bg-stone-800'
-            : 'text-stone-400 hover:text-stone-100'
-        }`}
-      >
-        EN
-      </button>
+    <div className="flex items-center space-x-1">
+      {(['fr', 'en'] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          className={`text-xs tracking-wide px-2 py-1 rounded transition-colors ${
+            lang === l
+              ? 'bg-accent/15 text-accent font-medium'
+              : 'text-stone-500 hover:text-stone-200'
+          }`}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
     </div>
   );
 
   return (
-    <nav className="fixed top-0 w-full bg-stone-950/90 backdrop-blur-sm z-50 border-b border-stone-800">
+    <nav className="fixed top-0 w-full bg-stone-950/95 backdrop-blur-sm z-50 border-b border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Logo */}
+
           <div className="flex-shrink-0">
             <Link
               href="/"
-              className="font-serif text-2xl tracking-wider text-stone-100 hover:scale-105 transition-transform duration-300 inline-block"
+              className="font-serif text-2xl tracking-wider text-stone-100 hover:text-accent transition-colors duration-300 inline-block"
             >
-              YOANN XIMENES
+              Yoann Ximenes
             </Link>
           </div>
 
-          {/* Menu Desktop */}
           <div className="hidden md:flex space-x-10 items-center">
-            {navLinks.map(({ href, key }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`uppercase text-sm tracking-widest hover:scale-110 transition-transform duration-300 ${
-                  isActive(href)
-                    ? 'text-stone-100 font-medium'
-                    : 'text-stone-400 hover:text-stone-100 transition-colors'
-                }`}
-              >
-                {t.nav[key]}
-              </Link>
-            ))}
+            {navLinks.map(({ href, key }) => {
+              const active = isActive(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`relative text-sm tracking-wide pb-0.5 transition-colors duration-200 group ${
+                    active
+                      ? 'text-stone-100'
+                      : 'text-stone-500 hover:text-stone-200'
+                  }`}
+                >
+                  {t.nav[key]}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[1px] bg-accent transition-all duration-300 ${
+                      active ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
+                </Link>
+              );
+            })}
             <div className="ml-4">
               <LangSelector />
             </div>
           </div>
 
-          {/* Mobile : lang + burger */}
           <div className="flex items-center space-x-2 md:hidden">
             <LangSelector />
             <button
@@ -98,7 +97,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menu Mobile */}
       {menuOpen && (
         <div className="md:hidden bg-stone-900 border-b border-stone-800 absolute w-full">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center">
@@ -107,8 +105,10 @@ export default function Navbar() {
                 key={href}
                 href={href}
                 onClick={() => setMenuOpen(false)}
-                className={`block px-3 py-4 text-base font-medium uppercase tracking-widest ${
-                  isActive(href) ? 'text-stone-100' : 'text-stone-400'
+                className={`block px-3 py-4 text-base tracking-wide ${
+                  isActive(href)
+                    ? 'text-stone-100 font-medium'
+                    : 'text-stone-500'
                 }`}
               >
                 {t.nav[key]}

@@ -88,7 +88,7 @@ function ArticleLink({
   const href = v(`${base}.${lienKey}`).trim() || '#';
   const label = v(`${base}.${lienTexteKey}`).trim() || v(`${base}.lireSuite`);
   const linkClass =
-    'inline-flex items-center text-sm font-medium text-stone-200 hover:underline decoration-1 underline-offset-4 decoration-stone-500';
+    'inline-flex items-center text-sm font-medium text-accent hover:underline decoration-1 underline-offset-4 decoration-accent/50 transition-colors';
 
   if (mode === 'studio') {
     return (
@@ -174,12 +174,12 @@ function ActualitesContent({
                 `${base}.dernieresPublications`,
                 'Titre publications',
                 'text',
-                <h2 className="font-serif text-2xl border-b border-stone-800 pb-4 text-stone-200">
+                <h2 className="font-serif text-2xl border-b border-accent/20 pb-4 text-stone-200">
                   {v(`${base}.dernieresPublications`)}
                 </h2>
               )}
             </div>
-            <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+            <div className="flex items-center justify-between border-b border-accent/20 pb-4">
               {wrap(
                 `${base}.instagram`,
                 'Instagram',

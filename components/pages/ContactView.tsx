@@ -32,15 +32,15 @@ function ContactContent({ mode, lang, v }: { mode: 'public' | 'studio'; lang: 'f
         {wrap(`${base}.title`, 'Titre', 'text', <h1 className="font-serif text-4xl md:text-5xl mb-8 text-stone-100">{v(`${base}.title`)}</h1>)}
         {wrap(`${base}.description`, 'Description', 'richtext', <p className="text-stone-400 font-light text-lg mb-12 max-w-2xl mx-auto">{v(`${base}.description`)}</p>)}
         <a href="mailto:contact@yoannximenes.art" className="inline-block group">
-          <span className="font-serif text-2xl md:text-4xl text-stone-200 border-b border-stone-800 group-hover:border-stone-100 group-hover:text-white transition-all duration-300 pb-2">
+          <span className="font-serif text-2xl md:text-4xl text-stone-200 border-b border-stone-800 group-hover:border-accent group-hover:text-accent transition-all duration-300 pb-2">
             contact@yoannximenes.art
           </span>
-          <div className="mt-4 text-sm uppercase tracking-widest text-stone-500 group-hover:text-stone-400 transition-colors flex items-center justify-center">
+          <div className="mt-4 text-sm tracking-wide text-stone-500 group-hover:text-accent transition-colors flex items-center justify-center">
             {v(`${base}.envoyerEmail`)}
             <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
           </div>
         </a>
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-center border-t border-stone-800 pt-12">
+        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-center border-t border-accent/20 pt-12">
           <div>
             {wrap(`${base}.atelier`, 'Atelier', 'text', <h3 className="text-stone-100 font-medium mb-2">{v(`${base}.atelier`)}</h3>)}
             {wrap(`${base}.parisFrance`, 'Ville', 'text', <p className="text-stone-500 font-light text-sm">{v(`${base}.parisFrance`)}</p>)}
@@ -56,7 +56,7 @@ function ContactContent({ mode, lang, v }: { mode: 'public' | 'studio'; lang: 'f
                 href="https://www.instagram.com/yoann.ximenes/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-stone-500 hover:text-stone-300"
+                className="text-stone-600 hover:text-accent transition-colors"
                 aria-label="Instagram"
               >
                 <InstagramIcon size={20} />

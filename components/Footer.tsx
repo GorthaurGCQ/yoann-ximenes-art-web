@@ -7,20 +7,21 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-stone-900 border-t border-stone-800 mt-20">
-      <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
-        <div className="flex justify-center space-x-6 mb-8">
+    <footer className="bg-stone-900 border-t-2 border-accent/30 mt-20">
+      <div className="max-w-7xl mx-auto py-16 px-4 overflow-hidden sm:px-6 lg:px-8">
+        <div className="flex justify-center space-x-6 mb-10">
           <a
             href="https://www.instagram.com/yoann.ximenes/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-stone-500 hover:text-stone-300 transition-colors hover:scale-110 transform duration-300"
+            className="text-stone-600 hover:text-accent transition-colors duration-300"
             aria-label="Instagram"
           >
             <InstagramIcon size={20} />
           </a>
         </div>
-        <p className="mt-8 text-center text-xs tracking-widest text-stone-600 uppercase">
+        <div className="w-8 h-[1px] bg-accent/40 mx-auto mb-8" />
+        <p className="text-center text-xs tracking-wide text-stone-600">
           &copy; 2026 Yoann Ximenes. {t.footer.droitsReserves}
         </p>
       </div>
