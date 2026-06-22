@@ -46,10 +46,13 @@ export function buildDefaultExpositions(): ExpositionItem[] {
 }
 
 export function parseExpositions(raw: string | null | undefined): ExpositionItem[] {
-  if (!raw?.trim()) return buildDefaultExpositions();
+  if (raw === null || raw === undefined) return buildDefaultExpositions();
+  if (!raw.trim()) return buildDefaultExpositions();
   try {
     const parsed = JSON.parse(raw) as ExpositionItem[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return buildDefaultExpositions();
+    if (!Array.isArray(parsed)) return buildDefaultExpositions();
+    // Un tableau vide est un état valide (l'utilisateur a supprimé toutes les expos)
+    if (parsed.length === 0) return [];
     return parsed.map((item) => ({
       id: item.id,
       year: item.year ?? '',

@@ -10,21 +10,21 @@
   /* ── Palette sémantique ──────────────────────────────────────────────── */
   --color-bg-primary:   #F7F4EF;   /* ivoire chaud — fond principal */
   --color-bg-secondary: #EDE9E2;   /* crème — cards, sections alternées */
-  --color-ink:          #1C1814;   /* brun très foncé — texte principal */
-  --color-ink-muted:    #8A7E74;   /* gris chaud — dates, lieux, metadata */
+  --color-ink:          #0D0B09;   /* quasi-noir chaud — texte principal */
+  --color-ink-muted:    #5C4E46;   /* brun moyen — dates, lieux, metadata */
   --color-accent:       #B85C38;   /* terre cuite — couleur signature */
   --color-accent-light: #E8C4B0;   /* terre cuite pâle — hover, badges */
   --color-border:       #D9D3CB;   /* séparateur chaud */
 
   /* ── Echelle stone remappée (backward-compat composants existants) ──── */
   --color-stone-50:  #0D0907;
-  --color-stone-100: #1C1814;   /* = ink */
-  --color-stone-200: #2A1E18;
-  --color-stone-300: #3D2F27;
-  --color-stone-400: #5A4840;
-  --color-stone-500: #7A6A60;
-  --color-stone-600: #8A7E74;   /* = ink-muted */
-  --color-stone-700: #B8AFA4;
+  --color-stone-100: #0D0B09;   /* = ink, quasi-noir */
+  --color-stone-200: #1C1814;
+  --color-stone-300: #2A1E18;
+  --color-stone-400: #4A3A30;   /* texte corps secondaire */
+  --color-stone-500: #5C4E46;   /* = ink-muted */
+  --color-stone-600: #5C4E46;   /* = ink-muted */
+  --color-stone-700: #8A7E74;   /* placeholder / très discret */
   --color-stone-800: #D9D3CB;   /* = border */
   --color-stone-900: #EDE9E2;   /* = bg-secondary */
   --color-stone-950: #F7F4EF;   /* = bg-primary */

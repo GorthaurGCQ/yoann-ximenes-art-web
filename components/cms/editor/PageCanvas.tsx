@@ -22,13 +22,23 @@ export default function PageCanvas({ page }: { page: CmsPage }) {
   const { selectBlock } = useCmsEditor();
   const View = VIEWS[page];
 
+  const blockNavigation = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const link = target.closest('a');
+    if (link) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   return (
     <div
       className="flex-[2] min-w-0 overflow-auto bg-stone-900/90 p-4 md:p-8"
       onClick={() => selectBlock(null)}
     >
       <div className="mx-auto w-full max-w-[1320px] min-h-full bg-stone-950 shadow-2xl border border-stone-800/80 rounded-xl overflow-hidden">
-        <div className="min-h-full text-stone-100">
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div className="min-h-full text-stone-100" onClickCapture={blockNavigation}>
           <View mode="studio" />
         </div>
       </div>

@@ -77,6 +77,14 @@ export const CONTENT_REGISTRY: ContentBlock[] = [
     kind: 'image',
     order: 6,
   },
+  {
+    key: 'accueil.enSavoirPlusLien',
+    label: 'URL du lien En savoir plus',
+    page: 'accueil',
+    section: 'expo',
+    kind: 'text',
+    order: 7,
+  },
 
   // Artiste
   {

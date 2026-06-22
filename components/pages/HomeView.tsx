@@ -21,6 +21,7 @@ const fallback = {
   'translations.en.index.enSavoirPlus': translations.en.index.enSavoirPlus,
   'translations.en.index.expoAlt': translations.en.index.expoAlt,
   'accueil.expoImage.src': '/Images/Oeuvres/Speechscape/speechscape_1.jpg',
+  'accueil.enSavoirPlusLien': '/expositions',
 };
 
 function HomeContent({
@@ -73,11 +74,17 @@ function HomeContent({
             )}
             {wrap(
               `${base}.enSavoirPlus`,
-              'Lien en savoir plus',
+              'Texte du lien',
               'text',
-              <Link href="/expositions" className="text-accent font-medium hover:underline decoration-1 underline-offset-4 decoration-accent/50 transition-colors">
+              <Link href={v('accueil.enSavoirPlusLien') || '/expositions'} className="text-accent font-medium hover:underline decoration-1 underline-offset-4 decoration-accent/50 transition-colors">
                 {v(`${base}.enSavoirPlus`)}
               </Link>
+            )}
+            {mode === 'studio' && wrap(
+              'accueil.enSavoirPlusLien',
+              'URL du lien',
+              'text',
+              <span className="block text-xs text-stone-500 font-mono mt-1">{v('accueil.enSavoirPlusLien') || '/expositions'}</span>
             )}
           </div>
           <div className="aspect-[4/3] bg-stone-900 relative overflow-hidden group border border-stone-800">
