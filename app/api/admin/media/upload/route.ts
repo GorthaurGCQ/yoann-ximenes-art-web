@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const filename = `${originalBase}-${randomUUID().slice(0, 8)}${extension}`;
 
   // Vercel Blob en production, filesystem local en développement
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
     const { put } = await import('@vercel/blob');
     const blob = await put(`uploads/${filename}`, file, {
       access: 'public',

@@ -15,7 +15,9 @@ const initialStore: CmsStore = {
 };
 
 function usesBlob(): boolean {
-  return !!process.env.BLOB_READ_WRITE_TOKEN;
+  // BLOB_READ_WRITE_TOKEN = token statique (local ou ancien mode)
+  // BLOB_STORE_ID = connexion OIDC automatique sur Vercel (nouveau mode)
+  return !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 }
 
 // URL publique du blob, mise en cache après la première écriture
