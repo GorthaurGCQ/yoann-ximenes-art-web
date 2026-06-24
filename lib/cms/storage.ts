@@ -7,13 +7,41 @@ import { getDefaultContentValue } from '@/lib/cms/defaults';
 import type { CmsStore, ContentEntry, ContentKind } from '@/lib/cms/types';
 
 const CMS_DATA_PATH = join(process.cwd(), 'data', 'cms-store.json');
+const BLOB_PATHNAME = 'cms-store.json';
 
 const initialStore: CmsStore = {
   entries: {},
   logs: [],
 };
 
+// Cache de l'URL du blob en mémoire (réinitialisé à chaque cold start serverless)
+let cachedBlobUrl: string | null = null;
+
+function usesBlob(): boolean {
+  return !!process.env.BLOB_READ_WRITE_TOKEN;
+}
+
 async function readStore(): Promise<CmsStore> {
+  if (usesBlob()) {
+    const { list } = await import('@vercel/blob');
+
+    if (!cachedBlobUrl) {
+      const { blobs } = await list({ prefix: BLOB_PATHNAME });
+      const blob = blobs.find((b) => b.pathname === BLOB_PATHNAME);
+      if (!blob) return initialStore;
+      cachedBlobUrl = blob.url;
+    }
+
+    const res = await fetch(cachedBlobUrl, { cache: 'no-store' });
+    if (!res.ok) return initialStore;
+    const parsed = (await res.json()) as CmsStore;
+    return {
+      entries: parsed.entries ?? {},
+      logs: parsed.logs ?? [],
+    };
+  }
+
+  // Fallback filesystem local (développement sans BLOB_READ_WRITE_TOKEN)
   try {
     const raw = await readFile(CMS_DATA_PATH, 'utf8');
     const parsed = JSON.parse(raw) as CmsStore;
@@ -22,18 +50,28 @@ async function readStore(): Promise<CmsStore> {
       logs: parsed.logs ?? [],
     };
   } catch {
-    await ensureStore(initialStore);
+    await ensureFileStore(initialStore);
     return initialStore;
   }
 }
 
-async function ensureStore(store: CmsStore): Promise<void> {
+async function ensureFileStore(store: CmsStore): Promise<void> {
   await mkdir(join(process.cwd(), 'data'), { recursive: true });
   await writeFile(CMS_DATA_PATH, JSON.stringify(store, null, 2), 'utf8');
 }
 
 async function writeStore(store: CmsStore): Promise<void> {
-  await ensureStore(store);
+  if (usesBlob()) {
+    const { put } = await import('@vercel/blob');
+    const blob = await put(BLOB_PATHNAME, JSON.stringify(store), {
+      access: 'public',
+      addRandomSuffix: false,
+    });
+    cachedBlobUrl = blob.url;
+    return;
+  }
+
+  await ensureFileStore(store);
 }
 
 export async function getContentValue(key: string): Promise<string | null> {

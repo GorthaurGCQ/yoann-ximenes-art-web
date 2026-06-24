@@ -31,16 +31,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Format non supporte' }, { status: 400 });
   }
 
-  const uploadDir = join(process.cwd(), 'public', 'Images', 'uploads');
-  await mkdir(uploadDir, { recursive: true });
-
   const originalBase = sanitizeBaseName(file.name.replace(extension, '')) || 'image';
   const filename = `${originalBase}-${randomUUID().slice(0, 8)}${extension}`;
-  const absolutePath = join(uploadDir, filename);
 
+  // Vercel Blob en production, filesystem local en développement
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { put } = await import('@vercel/blob');
+    const blob = await put(`uploads/${filename}`, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    });
+    return NextResponse.json({ ok: true, path: blob.url });
+  }
+
+  const uploadDir = join(process.cwd(), 'public', 'Images', 'uploads');
+  await mkdir(uploadDir, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(absolutePath, buffer);
+  await writeFile(join(uploadDir, filename), buffer);
 
-  const publicPath = `/Images/uploads/${filename}`;
-  return NextResponse.json({ ok: true, path: publicPath });
+  return NextResponse.json({ ok: true, path: `/Images/uploads/${filename}` });
 }
