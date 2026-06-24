@@ -43,3 +43,9 @@ next-env.d.ts
 
 # local CMS data storage
 data/cms-store.json
+
+# Documents de stage (ne pas versionner)
+*.docx
+*.doc
+*.pdf
+~$*
