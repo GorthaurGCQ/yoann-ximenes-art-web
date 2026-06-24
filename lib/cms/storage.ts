@@ -14,18 +14,18 @@ const initialStore: CmsStore = {
   logs: [],
 };
 
-// Cache de l'URL du blob en mémoire (réinitialisé à chaque cold start serverless)
-let cachedBlobUrl: string | null = null;
-
 function usesBlob(): boolean {
   return !!process.env.BLOB_READ_WRITE_TOKEN;
 }
 
+// URL publique du blob, mise en cache après la première écriture
+let cachedBlobUrl: string | null = null;
+
 async function readStore(): Promise<CmsStore> {
   if (usesBlob()) {
-    const { list } = await import('@vercel/blob');
-
+    // Récupérer l'URL depuis le cache ou via list() au cold start
     if (!cachedBlobUrl) {
+      const { list } = await import('@vercel/blob');
       const { blobs } = await list({ prefix: BLOB_PATHNAME });
       const blob = blobs.find((b) => b.pathname === BLOB_PATHNAME);
       if (!blob) return initialStore;
