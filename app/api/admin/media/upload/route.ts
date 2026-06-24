@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     const blob = await put(`uploads/${filename}`, file, {
       access: 'public',
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
     return NextResponse.json({ ok: true, path: blob.url });
   }

@@ -66,6 +66,7 @@ async function writeStore(store: CmsStore): Promise<void> {
     const blob = await put(BLOB_PATHNAME, JSON.stringify(store), {
       access: 'public',
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
     cachedBlobUrl = blob.url;
     return;
