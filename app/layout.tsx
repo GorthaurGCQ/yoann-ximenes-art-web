@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await getAdminSessionFromCookies();
 
   return (
-    <html lang="fr">
+    <html lang="fr" dir="ltr">
       <body className="font-sans antialiased text-stone-100 bg-stone-950">
         <AdminModeProvider initialIsAdmin={Boolean(session)}>
           <LanguageProvider>

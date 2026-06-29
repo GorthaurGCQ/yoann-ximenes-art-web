@@ -4,12 +4,9 @@ import {
   useRef,
   useEffect,
   Children,
-  isValidElement,
   cloneElement,
   type ReactElement,
   type ReactNode,
-  type FocusEvent,
-  type FormEvent,
 } from 'react';
 import { useCmsEditor } from '@/contexts/CmsEditorContext';
 import { getBlockByKey, getCounterpartKey } from '@/lib/cms/registry';
@@ -59,7 +56,7 @@ function InlineTextEditor({
 }: EditableRegionProps) {
   const { selectedKey, selectBlock, getValue, updateDraft, isBlockDirty } = useCmsEditor();
   const containerRef = useRef<HTMLDivElement>(null);
-  const editableRef = useRef<HTMLElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isSelected = selectedKey === blockKey;
   const isDirty = isBlockDirty(blockKey);
   const block = getBlockByKey(blockKey);
@@ -72,6 +69,7 @@ function InlineTextEditor({
     Boolean(counterpartKey && getValue(counterpartKey).trim());
 
   const child = Children.only(children) as ReactElement<{ className?: string; children?: ReactNode }>;
+  const childClassName = child.props.className ?? '';
 
   useEffect(() => {
     if (isSelected && containerRef.current) {
@@ -79,36 +77,23 @@ function InlineTextEditor({
     }
   }, [isSelected]);
 
+  // Quand le bloc devient sélectionné, focus + auto-resize + forcer LTR via JS
   useEffect(() => {
-    const el = editableRef.current;
-    if (!el || document.activeElement === el) return;
-    el.textContent = displayValue;
-  }, [displayValue, blockKey]);
+    if (!isSelected || !textareaRef.current) return;
+    const ta = textareaRef.current;
+    ta.focus();
+    ta.selectionStart = ta.selectionEnd = ta.value.length;
+    // Auto-resize
+    ta.style.height = 'auto';
+    ta.style.height = `${ta.scrollHeight}px`;
+    // Forcer LTR avec la priorité maximale possible
+    ta.style.setProperty('direction', 'ltr', 'important');
+    ta.setAttribute('dir', 'ltr');
+  }, [isSelected]);
 
   const ringClass = isSelected
     ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-stone-950'
     : 'hover:ring-2 hover:ring-blue-400/50 hover:ring-offset-2 hover:ring-offset-stone-950';
-
-  const editableProps = {
-    contentEditable: true,
-    suppressContentEditableWarning: true,
-    title: className.includes('contents') ? label : undefined,
-    className: `${child.props.className ?? ''} ${ringClass} outline-none cursor-text rounded-sm transition-all ${
-      kind === 'richtext' ? 'whitespace-pre-wrap' : ''
-    }`,
-    onFocus: (e: FocusEvent<HTMLElement>) => {
-      e.stopPropagation();
-      selectBlock(blockKey);
-    },
-    onClick: (e: React.MouseEvent) => {
-      e.stopPropagation();
-      selectBlock(blockKey);
-    },
-    onInput: (e: FormEvent<HTMLElement>) => {
-      updateDraft(blockKey, e.currentTarget.textContent ?? '');
-    },
-    ref: editableRef,
-  };
 
   const layoutClass = className.includes('contents') ? 'contents' : 'relative';
 
@@ -122,7 +107,44 @@ function InlineTextEditor({
           isUntranslated={isUntranslated}
         />
       )}
-      {cloneElement(child, editableProps)}
+
+      {isSelected ? (
+        /* Textarea en lieu et place de l'élément — direction garantie LTR */
+        <textarea
+          ref={textareaRef}
+          dir="ltr"
+          rows={1}
+          value={displayValue}
+          onChange={(e) => {
+            updateDraft(blockKey, e.target.value);
+            // Auto-resize
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
+          onInput={(e) => {
+            const ta = e.currentTarget;
+            ta.style.setProperty('direction', 'ltr', 'important');
+          }}
+          className={`cms-inline-editor ${childClassName} ${ringClass} outline-none rounded-sm w-full`}
+          style={{
+            direction: 'ltr',
+            unicodeBidi: 'isolate',
+            minHeight: '1em',
+            fontFamily: 'inherit',
+            lineHeight: 'inherit',
+            letterSpacing: 'inherit',
+          }}
+        />
+      ) : (
+        /* Élément original non éditable — clic pour sélectionner */
+        cloneElement(child, {
+          onClick: (e: React.MouseEvent) => {
+            e.stopPropagation();
+            selectBlock(blockKey);
+          },
+          className: `${childClassName} ${ringClass} cursor-pointer rounded-sm transition-all`,
+        } as Partial<typeof child.props> & { onClick: (e: React.MouseEvent) => void })
+      )}
     </div>
   );
 }

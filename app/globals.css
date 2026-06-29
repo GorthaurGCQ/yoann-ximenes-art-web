@@ -65,6 +65,34 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   STUDIO — forcer la direction LTR sur tous les champs éditables
+   Prévient le bogue Windows/navigateur où le texte s'affiche à l'envers
+   ───────────────────────────────────────────────────────────────────────── */
+[contenteditable],
+[contenteditable]:focus,
+input,
+textarea {
+  direction: ltr !important;
+  unicode-bidi: isolate;
+}
+
+/* Textarea utilisée pour l'édition inline dans le canvas studio */
+textarea.cms-inline-editor {
+  font: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  resize: none;
+  overflow: hidden;
+  display: block;
+  direction: ltr !important;
+}
+
 @keyframes fadeInUp {
   0%   { opacity: 0; transform: translateY(12px); }
   100% { opacity: 1; transform: translateY(0); }

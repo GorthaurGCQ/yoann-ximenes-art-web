@@ -40,12 +40,14 @@ function LangField({
       <label className="text-[10px] uppercase tracking-wider text-stone-500">{label}</label>
       {kind === 'richtext' ? (
         <textarea
+          dir="ltr"
           value={editorValue}
           onChange={(e) => onChange(fieldKey, e.target.value)}
           className="w-full min-h-28 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
         />
       ) : (
         <input
+          dir="ltr"
           value={editorValue}
           onChange={(e) => onChange(fieldKey, e.target.value)}
           className="w-full bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
@@ -204,12 +206,14 @@ export default function InspectorPanel() {
             </div>
           ) : block.kind === 'richtext' ? (
             <textarea
+              dir="ltr"
               value={richTextToEditorValue(value)}
               onChange={(e) => updateDraft(selectedKey, e.target.value)}
               className="w-full min-h-40 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
             />
           ) : (
             <input
+              dir="ltr"
               value={value}
               onChange={(e) => updateDraft(selectedKey, e.target.value)}
               className="w-full bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100"
@@ -279,6 +283,7 @@ export default function InspectorPanel() {
           </div>
         ) : (
           <textarea
+            dir="ltr"
             value={block.kind === 'richtext' ? richTextToEditorValue(value) : value}
             onChange={(e) => updateDraft(selectedKey, e.target.value)}
             className="w-full min-h-24 bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-100 mb-2"
