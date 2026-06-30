@@ -31,9 +31,9 @@ function ContactContent({ mode, lang, v }: { mode: 'public' | 'studio'; lang: 'f
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {wrap(`${base}.title`, 'Titre', 'text', <h1 className="font-serif text-4xl md:text-5xl mb-8 text-stone-100">{v(`${base}.title`)}</h1>)}
         {wrap(`${base}.description`, 'Description', 'richtext', <p className="text-stone-400 font-light text-lg mb-12 max-w-2xl mx-auto">{v(`${base}.description`)}</p>)}
-        <a href="mailto:contact@yoannximenes.art" className="inline-block group">
+        <a href="mailto:yoann.ximenes@gmail.com" className="inline-block group">
           <span className="font-serif text-2xl md:text-4xl text-stone-200 border-b border-stone-800 group-hover:border-accent group-hover:text-accent transition-all duration-300 pb-2">
-            contact@yoannximenes.art
+            yoann.ximenes@gmail.com
           </span>
           <div className="mt-4 text-sm tracking-wide text-stone-500 group-hover:text-accent transition-colors flex items-center justify-center">
             {v(`${base}.envoyerEmail`)}
